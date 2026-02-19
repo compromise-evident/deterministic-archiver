@@ -7,7 +7,7 @@ Run it: ```apt install g++ geany```. Open the .cpp in Geany. Hit F9 once. F5 to 
 <br>
 <br>
 
-# Creates archive.txt
+# archive.txt
 
 ```text
 Authorship_8.0.1
