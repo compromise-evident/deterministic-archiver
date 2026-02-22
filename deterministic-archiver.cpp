@@ -1,7 +1,7 @@
 /*Version 1.0.0                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
 The world's first deterministic archiver. Turn any folder
-into a REPRODUCIBLE text file and back. A text file--another
-world's first! It's clean, readable, and scrollable. */
+into a REPRODUCIBLE text file and back. Yes, a text file--
+another world's first! It's clean, readable, and scrollable.*/
 
 #include <fstream>
 #include <iostream>
