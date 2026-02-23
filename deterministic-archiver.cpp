@@ -65,10 +65,15 @@ int main()
 				//Adds file content.
 				char symbols[17] = {"0123456789abcdef"};
 				in_stream_n[a].get(file_byte); if(in_stream_n[a].eof() == true) {out_stream << "EMPTY FILE\n\n"; continue;}
-				for(int strip = 0; in_stream_n[a].eof() == false; in_stream_n[a].get(file_byte))
+				for(long long strip = 0; in_stream_n[a].eof() == false; in_stream_n[a].get(file_byte))
 				{	raw_byte = file_byte; if(raw_byte < 0) {raw_byte += 256;}
 					out_stream << symbols[raw_byte >>  4];
 					out_stream << symbols[raw_byte &  15];
+					
+					//5,000 file bytes per line in archive.txt, but in hex, so 10,000 characters are shown.
+					//You may change the "5000" below. Range: 1 to n. Too many characters on one line means
+					//scrolling through archive.txt will slow down your computer and make scrolling glitchy.
+					//Too few characters means too MUCH scrolling. Scrolling tested in Geany version 2.0.
 					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;}
 				}
 				out_stream << "\n\n";
