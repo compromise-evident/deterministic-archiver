@@ -1,11 +1,10 @@
-/*Version 1.0.0                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
+/*Version 2.0.0                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
 The world's first deterministic archiver. Turn any folder
 into a REPRODUCIBLE text file and back. Yes, a text file--
 another world's first! It's clean, readable, and scrollable.*/
 
 #include <fstream>
 #include <iostream>
-#include <vector>
 using namespace std;
 int main()
 {	int raw_byte;
@@ -19,7 +18,7 @@ int main()
 	     << "\n\nOption: ";
 	
 	int user_option; cin >> user_option;
-	if((user_option != 1) && (user_option != 2)) {cout << "\nInvalid.\n"; return 0;}
+	if((user_option != 1) && (user_option != 2)) {cout << "\nInvalid.\n"; return 1;}
 	
 	//Gets path, fixes it, tries it.
 	if(user_option == 1) {cout << "Drop/enter folder:\n"      ;}
@@ -27,65 +26,57 @@ int main()
 	char path[100000] = {'\0'}; cin.getline(path, 100000); if(path[0] == '\0') {cin.getline(path, 100000);}
 	if(path[0] == '\'') {for(int bm = 0, a = 0; a < 100000; a++) {if(path[a] != '\'') {path[bm] = path[a]; if(path[bm] == '\\') {path[bm] = '\'';} bm++;}}}
 	for(int a = 99999; a >= 0; a--) {if(path[a] != '\0') {if(path[a] == ' ') {path[a] = '\0';} break;}}
-	in_stream.open(path); if(in_stream.fail() == true) {cout << "\nNo path " << path << "\n"; return 0;} in_stream.close();
+	in_stream.open(path); if(in_stream.fail() == true) {cout << "\nNo path " << path << "\n"; return 1;} in_stream.close();
 	
 	//Create archive.___________________________________________________________________________________________________________________
 	if(user_option == 1)
 	{	string find;
-		find = "find \""; find += path; find += "\" -mindepth 1 -type d -printf '%P\n' | sort -V > archive.txt"  ; system(find.c_str()); //Adds folder names to empty archive.     find "/path/to/FOLDER" -mindepth 1 -type d -printf '%P\n' | sort -V > archive.txt
-		find = "find \""; find += path; find += "\" -mindepth 1 -type f -printf '%P\n' | sort -V > f_short_paths"; system(find.c_str()); //Gets list of files (short paths.)       find "/path/to/FOLDER" -mindepth 1 -type f -printf '%P\n' | sort -V > f_short_paths
-		find = "find \""; find += path; find += "\"             -type f                | sort -V > f"            ; system(find.c_str()); //Gets list of files.                     find "/path/to/FOLDER"             -type f                | sort -V > f
+		find = "find \""; find += path; find += "\" -mindepth 1 -type d -printf '%P\n' | sort -V > archive.txt"; system(find.c_str()); //Adds folder names to empty archive.     find "/path/to/FOLDER" -mindepth 1 -type d -printf '%P\n' | sort -V > archive.txt
+		find = "find \""; find += path; find += "\" -mindepth 1 -type f -printf '%P\n' | sort -V > short_paths"; system(find.c_str()); //Gets list of files (short paths.)       find "/path/to/FOLDER" -mindepth 1 -type f -printf '%P\n' | sort -V > short_paths
+		find = "find \""; find += path; find += "\"             -type f                | sort -V > full_paths" ; system(find.c_str()); //Gets list of files (full paths.)        find "/path/to/FOLDER"             -type f                | sort -V > full_paths
 		
 		//Gets number of files.
 		long long number_of_files = 0;
-		in_stream.open("f"); in_stream.get(file_byte);
+		in_stream.open("full_paths"); if(in_stream.fail() == true) {cout << "\nERROR 1\n"; return 1;} in_stream.get(file_byte);
 		for(; in_stream.eof() == false; in_stream.get(file_byte)) {if(file_byte == '\n') {number_of_files++;}}
 		in_stream.close();
 		
 		//Adds files to archive.
 		if(number_of_files > 0)
-		{	//Opens all files.
-			vector <ifstream> in_stream_n;
-			bool ok = true;
-			in_stream.open("f");
-			for(long long a = 0; a < number_of_files; a++)
-			{	char name[100000]; in_stream.getline(name, 100000); in_stream_n.push_back(ifstream(name));
-				if(in_stream_n[a].fail() == true) {cout << "CAN'T OPEN " << name << "\n"; ok = false;}
-			}
-			in_stream.close();
-			if(ok == false) {return 0;}
-			
-			//Begins.
+		{	ifstream in_stream_short_paths;
+			ifstream in_stream_full_paths;
+			in_stream_short_paths.open("short_paths"); if(in_stream_short_paths.fail() == true) {cout << "\nERROR 2\n"; return 1;}
+			in_stream_full_paths.open ("full_paths" ); if(in_stream_full_paths.fail()  == true) {cout << "\nERROR 3\n"; return 1;}
 			out_stream.open("archive.txt", ios::app); out_stream << "\n";
-			in_stream.open("f_short_paths");
 			for(long long a = 0; a < number_of_files; a++)
 			{	//Adds file name.
-				char name[100000]; in_stream.getline(name, 100000); out_stream << name << "\n";
+				string line; getline(in_stream_short_paths, line); out_stream << line << "\n";
+				
+				//Opens file.
+				getline(in_stream_full_paths, line); in_stream.open(line); if(in_stream.fail() == true) {cout << "\nERROR 4\n"; return 1;}
 				
 				//Adds file content.
 				char symbols[17] = {"0123456789abcdef"};
-				in_stream_n[a].get(file_byte); if(in_stream_n[a].eof() == true) {out_stream << "EMPTY FILE\n\n"; continue;}
-				for(long long strip = 0; in_stream_n[a].eof() == false; in_stream_n[a].get(file_byte))
+				in_stream.get(file_byte); if(in_stream.eof() == true) {out_stream << "EMPTY FILE\n\n"; in_stream.close(); continue;}
+				for(long long strip = 0; in_stream.eof() == false; in_stream.get(file_byte))
 				{	raw_byte = file_byte; if(raw_byte < 0) {raw_byte += 256;}
 					out_stream << symbols[raw_byte >>  4];
 					out_stream << symbols[raw_byte &  15];
-					
-					//5,000 file bytes per line in archive.txt, but in hex, so 10,000 characters are shown.
-					//You may change the "5000" below. Range: 1 to n. Too many characters on one line means
-					//scrolling through archive.txt will slow down your computer and make scrolling glitchy.
-					//Too few characters means too MUCH scrolling. Scrolling tested in Geany version 2.0.
-					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;}
+					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 file bytes per line but in hex, so 10,000 characters are shown.
 				}
 				out_stream << "\n\n";
+				in_stream.close();
 			}
-			in_stream.close();
+			in_stream_short_paths.close();
+			in_stream_full_paths.close();
 			out_stream.close();
 		}
 		
 		//Saves & prints sha256sum of archive.txt.
 		system("sha256sum archive.txt > sha256sum");
-		in_stream.open("sha256sum"); char line[100000]; in_stream.getline(line, 100000); cout << "\n" << line << "\n"; in_stream.close();
-		remove("f"); remove("f_short_paths");
+		in_stream.open("sha256sum"); if(in_stream.fail() == true) {cout << "\nERROR 5\n"; return 1;}
+		char line[100000]; in_stream.getline(line, 100000); cout << "\n" << line << "\n"; in_stream.close();
+		remove("short_paths"); remove("full_paths");
 	}
 	
 	//Unpack archive.___________________________________________________________________________________________________________________
@@ -94,11 +85,12 @@ int main()
 		system("rm -r -f unpacked"); system("mkdir unpacked");
 		
 		//If empty archive.
-		in_stream.open(path); in_stream.get(file_byte); if(in_stream.eof() == true) {in_stream.close(); return 0;} in_stream.close();
+		in_stream.open(path); if(in_stream.fail()  == true) {cout << "\nERROR 6\n"; return 1;}
+		in_stream.get(file_byte); if(in_stream.eof() == true) {in_stream.close(); return 0;} in_stream.close();
 		
 		//If folders.
 		if(file_byte != '\n')
-		{	in_stream.open(path);
+		{	in_stream.open(path); if(in_stream.fail()  == true) {cout << "\nERROR 7\n"; return 1;}
 			char name[100000]; in_stream.getline(name, 100000);
 			for(; name[0] != '\0'; in_stream.getline(name, 100000))
 			{	string mkdir = "mkdir \"unpacked/"; mkdir += name; mkdir += '"'; system(mkdir.c_str()); //mkdir "unpacked/FOLDER NAME"
@@ -108,7 +100,7 @@ int main()
 		}
 		
 		//If files.
-		in_stream.open(path);
+		in_stream.open(path); if(in_stream.fail()  == true) {cout << "\nERROR 8\n"; return 1;}
 		char line[100000]; in_stream.getline(line, 100000);
 		if(file_byte != '\n') {for(; line[0] != '\0'; in_stream.getline(line, 100000)) {}}
 		for(;;)
