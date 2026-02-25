@@ -7,7 +7,8 @@ Version 2.0.0   Not limited by the max number of files that can be open at once.
                 things you can do, there are servers who can read from 1,000,000
                 files by having each one open simultaneously,   but Linux limits
                 you because otherwise,  an older computer might crash somewhere.
-                That's no fucking excuse! Let it crash so it can be replaced!
+                That's no fucking excuse!  Let it crash  so it can be  replaced!
+                Added safety: return 1; if any in_stream.open() fails.
                 2026_02_25
 
 Version 1.0.0   Now was that so hard? How come none existed before this?????????
