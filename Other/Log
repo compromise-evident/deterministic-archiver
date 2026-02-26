@@ -2,6 +2,9 @@ deterministic-archiver
 
 
 
+Version 3.0.0   Refactored archiving (option 1). Minimalist, cleaner.
+                2026_02_25
+
 Version 2.0.0   Not limited by the max number of files that can be open at once.
                 The Linux kernel allows only 1024 in_stream at once.   There are
                 things you can do, there are servers who can read from 1,000,000
