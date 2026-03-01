@@ -48,7 +48,7 @@ int main()
 				for(; in_stream.eof() == false; in_stream.get(file_byte))
 				{	char symbols[17] = {"0123456789abcdef"};
 					out_stream << symbols[(unsigned char)file_byte >> 4] << symbols[file_byte & 0xf];
-					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 hex per line. Range: 1 to 49,999.
+					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 2-digit hex per line, so 10,000 characters. Range: 1 to 49,999.
 				}
 				if(strip == 0) {out_stream << "\n";} else {out_stream << "\n\n";}
 				in_stream.close();
