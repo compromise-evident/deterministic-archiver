@@ -1,4 +1,4 @@
-/*Version 3.0.1                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
+/*Version 3.1.0                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
 The world's first deterministic archiver. Turn any folder
 into a REPRODUCIBLE text file and back. Yes, a text file--
 another world's first! It's clean, readable, and scrollable.*/
@@ -44,12 +44,13 @@ int main()
 				string full_path = path; full_path += "/"; full_path += line;
 				in_stream.open(full_path); if(in_stream.fail() == true) {cout << "\nERROR 2\n"; return 1;}
 				in_stream.get(file_byte); if(in_stream.eof() == true) {out_stream << "EMPTY FILE\n\n"; in_stream.close(); continue;}
-				for(long long strip = 0; in_stream.eof() == false; in_stream.get(file_byte))
+				long long strip = 0;
+				for(; in_stream.eof() == false; in_stream.get(file_byte))
 				{	char symbols[17] = {"0123456789abcdef"};
 					out_stream << symbols[(unsigned char)file_byte >> 4] << symbols[file_byte & 0xf];
-					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 file hex per line so 10,000 characters.
+					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 hex per line.
 				}
-				out_stream << "\n\n";
+				if(strip == 0) {out_stream << "\n";} else {out_stream << "\n\n";}
 				in_stream.close();
 			}
 			out_stream.close();
