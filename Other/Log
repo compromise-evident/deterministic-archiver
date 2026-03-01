@@ -2,6 +2,9 @@ deterministic-archiver
 
 
 
+Version 3.0.1   Archiving is slightly faster.
+                2026_02_28
+
 Version 3.0.0   Refactored archiving (option 1). Minimalist, cleaner.
                 2026_02_25
 
