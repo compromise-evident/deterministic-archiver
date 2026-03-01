@@ -79,7 +79,7 @@ int main()
 		{	in_stream.open(path); if(in_stream.fail()  == true) {cout << "\nERROR 4\n"; return 1;}
 			char name[100000]; in_stream.getline(name, 100000);
 			for(; name[0] != '\0'; in_stream.getline(name, 100000))
-			{	string mkdir = "mkdir \"unpacked/"; mkdir += name; mkdir += '"'; system(mkdir.c_str()); //mkdir "unpacked/FOLDER NAME"
+			{	string mkdir = "mkdir -p \"unpacked/"; mkdir += name; mkdir += '"'; system(mkdir.c_str()); //mkdir "unpacked/FOLDER NAME"
 			}
 			in_stream.getline(name, 100000); if(name[0] == '\0') {in_stream.close(); return 0;}
 			in_stream.close();
