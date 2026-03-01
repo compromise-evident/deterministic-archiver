@@ -19,7 +19,7 @@ int main()
 	int user_option; cin >> user_option;
 	if((user_option != 1) && (user_option != 2)) {cout << "\nInvalid.\n"; return 1;}
 	
-	//Gets path, fixes it, tries it.
+	//Gets path, fixes it if dropped.
 	if(user_option == 1) {cout << "Drop/enter folder:\n"      ;}
 	if(user_option == 2) {cout << "Drop/enter archive file:\n";}
 	char path[100000] = {'\0'}; cin.getline(path, 100000); if(path[0] == '\0') {cin.getline(path, 100000);}
