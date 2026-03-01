@@ -2,6 +2,9 @@ deterministic-archiver
 
 
 
+Version 3.1.0   Fixed a bug I forgot to test for. DO NOT USE PREVIOUS VERSIONS!!
+                2026_03_01
+
 Version 3.0.1   Archiving is slightly faster.
                 2026_02_28
 
