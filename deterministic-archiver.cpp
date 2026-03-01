@@ -44,11 +44,11 @@ int main()
 				string full_path = path; full_path += "/"; full_path += line;
 				in_stream.open(full_path); if(in_stream.fail() == true) {cout << "\nERROR 2\n"; return 1;}
 				in_stream.get(file_byte); if(in_stream.eof() == true) {out_stream << "EMPTY FILE\n\n"; in_stream.close(); continue;}
-				long long strip = 0;
+				int strip = 0;
 				for(; in_stream.eof() == false; in_stream.get(file_byte))
 				{	char symbols[17] = {"0123456789abcdef"};
 					out_stream << symbols[(unsigned char)file_byte >> 4] << symbols[file_byte & 0xf];
-					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 hex per line.
+					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 hex per line. Range: 1 to 99,999.
 				}
 				if(strip == 0) {out_stream << "\n";} else {out_stream << "\n\n";}
 				in_stream.close();
