@@ -46,7 +46,7 @@ int main()
 				in_stream.get(file_byte); if(in_stream.eof() == true) {out_stream << "EMPTY FILE\n\n"; in_stream.close(); continue;}
 				int strip = 0;
 				for(; in_stream.eof() == false; in_stream.get(file_byte))
-				{	char symbols[17] = {"0123456789abcdef"};
+				{	static const char symbols[] = "0123456789abcdef";
 					out_stream << symbols[(unsigned char)file_byte >> 4] << symbols[file_byte & 0xf];
 					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 2-digit hex per line, so 10,000 characters. Range: 1 to 49,999.
 				}
