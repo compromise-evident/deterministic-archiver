@@ -1,4 +1,4 @@
-/*Version 3.1.0                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
+/*Version 3.2.0                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
 The world's first deterministic archiver. Turn any folder
 into a REPRODUCIBLE text file and back. Yes, a text file--
 another world's first! It's clean, readable, and scrollable.*/
@@ -7,7 +7,10 @@ another world's first! It's clean, readable, and scrollable.*/
 #include <iostream>
 using namespace std;
 int main()
-{	char file_byte;
+{	//Declares computer settings for reproducibility in things like system() and bash.
+	setenv("LC_ALL", "C", 1); setenv("LANG", "C", 1); setenv("LANGUAGE", "C", 1);
+	
+	char file_byte;
 	ifstream in_stream;
 	ofstream out_stream;
 	
