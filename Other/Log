@@ -2,6 +2,10 @@ deterministic-archiver
 
 
 
+Version 3.2.1   path is now string, not char; path length no longer limited. But
+                the cost is that single-quotes in paths are not handled.
+                2026_03_23
+
 Version 3.2.0   Declares  computer settings for  reproducibility  in things like
                 system() and bash. 3 environments set: setenv("LC_ALL", "C", 1);
                 setenv("LANG", "C", 1); setenv("LANGUAGE", "C", 1);   which made
