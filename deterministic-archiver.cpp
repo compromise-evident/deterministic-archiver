@@ -1,4 +1,4 @@
-/*Version 3.2.0                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
+/*Version 3.2.1                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
 The world's first deterministic archiver. Turn any folder
 into a REPRODUCIBLE text file and back. Yes, a text file--
 another world's first! It's clean, readable, and scrollable.*/
@@ -25,10 +25,9 @@ int main()
 	//Gets path, fixes it if dropped.
 	if(user_option == 1) {cout << "Drop/enter folder:\n"      ;}
 	if(user_option == 2) {cout << "Drop/enter archive file:\n";}
-	char path[100000] = {'\0'}; cin.getline(path, 100000); if(path[0] == '\0') {cin.getline(path, 100000);}
-	if(path[0] == '\'') {for(int bm = 0, a = 0; a < 100000; a++) {if(path[a] != '\'') {path[bm] = path[a]; if(path[bm] == '\\') {path[bm] = '\'';} bm++;}}}
-	for(int a = 99999; a >= 0; a--) {if(path[a] != '\0') {if(path[a] == ' ') {path[a] = '\0';} break;}}
-	in_stream.open(path); if(in_stream.fail() == true) {cout << "\nNo path " << path << "\n"; return 1;} in_stream.close();
+	string path; getline(cin, path); if(path[0] == '\0') {getline(cin, path);}
+	if(path[0] == '\'') {path.erase(0, 1); path.pop_back(); path.pop_back();}
+	in_stream.open(path); if(in_stream.fail()) {cout << "\nNo path " << path << "\n"; return 1;} in_stream.close();
 	
 	//Create archive.___________________________________________________________________________________________________________________
 	if(user_option == 1)
@@ -38,17 +37,17 @@ int main()
 		
 		//Adds files to archive.
 		ifstream in_stream_short_paths;
-		in_stream_short_paths.open("short_paths"); if(in_stream_short_paths.fail() == true) {cout << "\nERROR 1\n"; return 1;}
+		in_stream_short_paths.open("short_paths"); if(in_stream_short_paths.fail()) {cout << "\nERROR 1\n"; return 1;}
 		string line; getline(in_stream_short_paths, line);
 		if(line[0] != '\0')
 		{	out_stream.open("archive.txt", ios::app); out_stream << "\n";
 			for(; line[0] != '\0'; getline(in_stream_short_paths, line))
 			{	out_stream << line << "\n"; //Adds file name.
 				string full_path = path; full_path += "/"; full_path += line;
-				in_stream.open(full_path); if(in_stream.fail() == true) {cout << "\nERROR 2\n"; return 1;}
-				in_stream.get(file_byte); if(in_stream.eof() == true) {out_stream << "EMPTY FILE\n\n"; in_stream.close(); continue;}
+				in_stream.open(full_path); if(in_stream.fail()) {cout << "\nERROR 2\n"; return 1;}
+				in_stream.get(file_byte); if(in_stream.eof()) {out_stream << "EMPTY FILE\n\n"; in_stream.close(); continue;}
 				int strip = 0;
-				for(; in_stream.eof() == false; in_stream.get(file_byte))
+				for(; !in_stream.eof(); in_stream.get(file_byte))
 				{	static const char symbols[] = "0123456789abcdef";
 					out_stream << symbols[(unsigned char)file_byte >> 4] << symbols[file_byte & 0xf];
 					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 2-digit hex per line, so 10,000 characters. Range: 1 to 49,999.
@@ -72,12 +71,12 @@ int main()
 		system("rm -r -f unpacked"); system("mkdir unpacked");
 		
 		//If empty archive.
-		in_stream.open(path); if(in_stream.fail()  == true) {cout << "\nERROR 3\n"; return 1;}
-		in_stream.get(file_byte); if(in_stream.eof() == true) {in_stream.close(); return 0;} in_stream.close();
+		in_stream.open(path); if(in_stream.fail()) {cout << "\nERROR 3\n"; return 1;}
+		in_stream.get(file_byte); if(in_stream.eof()) {in_stream.close(); return 0;} in_stream.close();
 		
 		//If folders.
 		if(file_byte != '\n')
-		{	in_stream.open(path); if(in_stream.fail()  == true) {cout << "\nERROR 4\n"; return 1;}
+		{	in_stream.open(path); if(in_stream.fail()) {cout << "\nERROR 4\n"; return 1;}
 			char name[100000]; in_stream.getline(name, 100000);
 			for(; name[0] != '\0'; in_stream.getline(name, 100000))
 			{	string mkdir = "mkdir -p \"unpacked/"; mkdir += name; mkdir += '"'; system(mkdir.c_str()); //mkdir -p "unpacked/FOLDER NAME"
@@ -87,7 +86,7 @@ int main()
 		}
 		
 		//If files.
-		in_stream.open(path); if(in_stream.fail()  == true) {cout << "\nERROR 5\n"; return 1;}
+		in_stream.open(path); if(in_stream.fail()) {cout << "\nERROR 5\n"; return 1;}
 		char line[100000]; in_stream.getline(line, 100000);
 		if(file_byte != '\n') {for(; line[0] != '\0'; in_stream.getline(line, 100000)) {}}
 		for(;;)
