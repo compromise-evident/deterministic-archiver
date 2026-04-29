@@ -40,7 +40,7 @@ int main()
 	if(user_option == 1)
 	{	vector <string>   file_list;
 		vector <string> folder_list;
-		for(const auto& entry : std::filesystem::recursive_directory_iterator(path))
+		for(const auto& entry : filesystem::recursive_directory_iterator(path))
 		{	     if(entry.is_regular_file()) {  file_list.push_back(entry.path().lexically_relative(path).string());} //Loads list of   files to RAM as relative paths.
 			else if(entry.is_directory   ()) {folder_list.push_back(entry.path().lexically_relative(path).string());} //Loads list of folders to RAM as relative paths.
 		}
@@ -93,27 +93,27 @@ int main()
 		//If folders.
 		if(file_byte != '\n')
 		{	in_stream.open(path); if(in_stream.fail()) {cout << "\nERROR 4\n"; return 1;}
-			char name[1000000]; in_stream.getline(name, 1000000);
-			for(; name[0] != '\0'; in_stream.getline(name, 1000000))
+			string name; getline(in_stream, name);
+			for(; name[0] != '\0'; getline(in_stream, name))
 			{	string dir = "unpacked/"; dir += name; filesystem::create_directories(dir); //Creates folder.
 			}
-			in_stream.getline(name, 1000000); if(name[0] == '\0') {in_stream.close(); return 0;}
+			getline(in_stream, name); if(name[0] == '\0') {in_stream.close(); return 0;}
 			in_stream.close();
 		}
 		
 		//If files.
 		in_stream.open(path); if(in_stream.fail()) {cout << "\nERROR 5\n"; return 1;}
-		char line[1000000]; in_stream.getline(line, 1000000);
-		if(file_byte != '\n') {for(; line[0] != '\0'; in_stream.getline(line, 1000000)) {}}
+		string line; getline(in_stream, line);
+		if(file_byte != '\n') {for(; line[0] != '\0'; getline(in_stream, line)) {}}
 		for(;;)
 		{	//Creates empty file.
-			in_stream.getline(line, 1000000);
+			getline(in_stream, line);
 			if(line[0] == '\0') {in_stream.close(); return 0;}
 			string name = "unpacked/"; name += line;
 			out_stream.open(name); out_stream.close();
 			
 			//Adds file content.
-			in_stream.getline(line, 1000000);
+			getline(in_stream, line);
 			if(line[0] != 'E')
 			{	out_stream.open(name);
 				//All strips.
@@ -127,12 +127,12 @@ int main()
 						first <<= 4;
 						out_stream.put(first + second);
 					}
-					in_stream.getline(line, 1000000);
+					getline(in_stream, line);
 					if(line[0] == '\0') {break;}
 				}
 				out_stream.close();
 			}
-			else {in_stream.getline(line, 1000000);}
+			else {getline(in_stream, line);}
 		}
 		in_stream.close();
 	}
