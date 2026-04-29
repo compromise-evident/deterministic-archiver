@@ -1,14 +1,21 @@
-/*Version 3.2.1                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
+/*Version 4.0.0                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
 The world's first deterministic archiver. Turn any folder
 into a REPRODUCIBLE text file and back. Yes, a text file--
 another world's first! It's clean, readable, and scrollable.*/
 
+#include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <vector>
 using namespace std;
 int main()
-{	//Declares computer settings for reproducibility in things like system() and bash.
-	setenv("LC_ALL", "C", 1); setenv("LANG", "C", 1); setenv("LANGUAGE", "C", 1);
+{	//Ensures reproducibility.
+	setlocale(LC_ALL, "C");
+	locale::global(std::locale("C"));
+	setenv("LC_ALL",   "C", 1);
+	setenv("LANG",     "C", 1);
+	setenv("LANGUAGE", "C", 1);
 	
 	char file_byte;
 	ifstream in_stream;
@@ -31,17 +38,31 @@ int main()
 	
 	//Create archive.___________________________________________________________________________________________________________________
 	if(user_option == 1)
-	{	string find;
-		find = "find \""; find += path; find += "\" -mindepth 1 -type d -printf '%P\n' | sort -V > archive.txt"; system(find.c_str()); //Adds folder names to empty archive.     find "/path/to/FOLDER" -mindepth 1 -type d -printf '%P\n' | sort -V > archive.txt
-		find = "find \""; find += path; find += "\" -mindepth 1 -type f -printf '%P\n' | sort -V > short_paths"; system(find.c_str()); //Gets list of files (short paths.)       find "/path/to/FOLDER" -mindepth 1 -type f -printf '%P\n' | sort -V > short_paths
+	{	vector <string>   file_list;
+		vector <string> folder_list;
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
+		{	     if(entry.is_regular_file()) {  file_list.push_back(entry.path().lexically_relative(path).string());} //Loads list of   files to RAM as relative paths.
+			else if(entry.is_directory   ()) {folder_list.push_back(entry.path().lexically_relative(path).string());} //Loads list of folders to RAM as relative paths.
+		}
+		
+		sort(  file_list.begin(),   file_list.end()); //Sorts list of   files in RAM.
+		sort(folder_list.begin(), folder_list.end()); //Sorts list of folders in RAM.
+		
+		out_stream.open("/tmp/dar_relative_paths");
+		for (const auto& file_path : file_list)   {out_stream << file_path << "\n";} //Writes list of files to /tmp.
+		out_stream.close();
+		
+		out_stream.open("archive.txt");
+		for (const auto& file_path : folder_list) {out_stream << file_path << "\n";} //Writes list of folders to empty archive.
+		out_stream.close();
 		
 		//Adds files to archive.
-		ifstream in_stream_short_paths;
-		in_stream_short_paths.open("short_paths"); if(in_stream_short_paths.fail()) {cout << "\nERROR 1\n"; return 1;}
-		string line; getline(in_stream_short_paths, line);
+		ifstream in_stream_relative_paths;
+		in_stream_relative_paths.open("/tmp/dar_relative_paths"); if(in_stream_relative_paths.fail()) {cout << "\nERROR 1\n"; return 1;}
+		string line; getline(in_stream_relative_paths, line);
 		if(line[0] != '\0')
 		{	out_stream.open("archive.txt", ios::app); out_stream << "\n";
-			for(; line[0] != '\0'; getline(in_stream_short_paths, line))
+			for(; line[0] != '\0'; getline(in_stream_relative_paths, line))
 			{	out_stream << line << "\n"; //Adds file name.
 				string full_path = path; full_path += "/"; full_path += line;
 				in_stream.open(full_path); if(in_stream.fail()) {cout << "\nERROR 2\n"; return 1;}
@@ -57,18 +78,13 @@ int main()
 			}
 			out_stream.close();
 		}
-		in_stream_short_paths.close();
-		
-		//Saves & prints sha256sum of archive.txt.
-		system("sha256sum archive.txt | tr -d '\n' | tee -a sha256sum"); cout << "\n";
-		out_stream.open("sha256sum", ios::app); out_stream << "  of  " << path << "\n"; out_stream.close();
-		remove("short_paths");
+		in_stream_relative_paths.close();
 	}
 	
 	//Unpack archive.___________________________________________________________________________________________________________________
 	if(user_option == 2)
 	{	//Creates empty folder "unpacked".
-		system("rm -r -f unpacked"); system("mkdir unpacked");
+		filesystem::remove_all("unpacked"); filesystem::create_directories("unpacked");
 		
 		//If empty archive.
 		in_stream.open(path); if(in_stream.fail()) {cout << "\nERROR 3\n"; return 1;}
@@ -77,32 +93,32 @@ int main()
 		//If folders.
 		if(file_byte != '\n')
 		{	in_stream.open(path); if(in_stream.fail()) {cout << "\nERROR 4\n"; return 1;}
-			char name[100000]; in_stream.getline(name, 100000);
-			for(; name[0] != '\0'; in_stream.getline(name, 100000))
-			{	string mkdir = "mkdir -p \"unpacked/"; mkdir += name; mkdir += '"'; system(mkdir.c_str()); //mkdir -p "unpacked/FOLDER NAME"
+			char name[1000000]; in_stream.getline(name, 1000000);
+			for(; name[0] != '\0'; in_stream.getline(name, 1000000))
+			{	string dir = "unpacked/"; dir += name; filesystem::create_directories(dir); //Creates folder.
 			}
-			in_stream.getline(name, 100000); if(name[0] == '\0') {in_stream.close(); return 0;}
+			in_stream.getline(name, 1000000); if(name[0] == '\0') {in_stream.close(); return 0;}
 			in_stream.close();
 		}
 		
 		//If files.
 		in_stream.open(path); if(in_stream.fail()) {cout << "\nERROR 5\n"; return 1;}
-		char line[100000]; in_stream.getline(line, 100000);
-		if(file_byte != '\n') {for(; line[0] != '\0'; in_stream.getline(line, 100000)) {}}
+		char line[1000000]; in_stream.getline(line, 1000000);
+		if(file_byte != '\n') {for(; line[0] != '\0'; in_stream.getline(line, 1000000)) {}}
 		for(;;)
 		{	//Creates empty file.
-			in_stream.getline(line, 100000);
+			in_stream.getline(line, 1000000);
 			if(line[0] == '\0') {in_stream.close(); return 0;}
 			string name = "unpacked/"; name += line;
 			out_stream.open(name); out_stream.close();
 			
 			//Adds file content.
-			in_stream.getline(line, 100000);
+			in_stream.getline(line, 1000000);
 			if(line[0] != 'E')
 			{	out_stream.open(name);
 				//All strips.
 				for(;;)
-				{	//1 strip.
+				{	//One strip.
 					for(int a = 0; line[a] != '\0'; a += 2)
 					{	int first  = line[a    ];
 						int second = line[a + 1];
@@ -111,12 +127,12 @@ int main()
 						first <<= 4;
 						out_stream.put(first + second);
 					}
-					in_stream.getline(line, 100000);
+					in_stream.getline(line, 1000000);
 					if(line[0] == '\0') {break;}
 				}
 				out_stream.close();
 			}
-			else {in_stream.getline(line, 100000);}
+			else {in_stream.getline(line, 1000000);}
 		}
 		in_stream.close();
 	}
