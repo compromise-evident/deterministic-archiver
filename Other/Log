@@ -2,6 +2,10 @@ deterministic-archiver
 
 
 
+Version 4.0.0   No system() or OS undesirables. New license: UNLICENSE. Warning:
+                not compatible with previous versions due to C++'s sorting.
+                2026_04_28
+
 Version 3.2.1   path is now string, not char; path length no longer limited. But
                 the cost is that single-quotes in paths are not handled.
                 2026_03_23
@@ -26,7 +30,6 @@ Version 2.0.0   Not limited by the max number of files that can be open at once.
                 things you can do, there are servers who can read from 1,000,000
                 files by having each one open simultaneously,   but Linux limits
                 you because otherwise,  an older computer might crash somewhere.
-                That's no fucking excuse!  Let it crash  so it can be  replaced!
                 Added safety: return 1; if any in_stream.open() fails.
                 2026_02_25
 
