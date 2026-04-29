@@ -40,7 +40,7 @@ int main()
 	if(user_option == 1)
 	{	vector <string>   file_list;
 		vector <string> folder_list;
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
+		for(const auto& entry : std::filesystem::recursive_directory_iterator(path))
 		{	     if(entry.is_regular_file()) {  file_list.push_back(entry.path().lexically_relative(path).string());} //Loads list of   files to RAM as relative paths.
 			else if(entry.is_directory   ()) {folder_list.push_back(entry.path().lexically_relative(path).string());} //Loads list of folders to RAM as relative paths.
 		}
@@ -49,11 +49,11 @@ int main()
 		sort(folder_list.begin(), folder_list.end()); //Sorts list of folders in RAM.
 		
 		out_stream.open("/tmp/dar_relative_paths");
-		for (const auto& file_path : file_list)   {out_stream << file_path << "\n";} //Writes list of files to /tmp.
+		for(const auto& file_path : file_list)   {out_stream << file_path << "\n";} //Writes list of files to /tmp.
 		out_stream.close();
 		
 		out_stream.open("archive.txt");
-		for (const auto& file_path : folder_list) {out_stream << file_path << "\n";} //Writes list of folders to empty archive.
+		for(const auto& file_path : folder_list) {out_stream << file_path << "\n";} //Writes list of folders to empty archive.
 		out_stream.close();
 		
 		//Adds files to archive.
