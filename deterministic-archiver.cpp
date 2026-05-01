@@ -1,4 +1,8 @@
-/*Version 4.0.0                                                                 Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
+//YOUR CONTROLS:                                                                Run it: "apt install g++ geany". Open the .cpp in Geany. Hit F9 once. F5 to run.
+long long max_strip_length = 5000;
+//# of 2-digit hex per line of file content in archive.
+
+/*Version 4.0.0
 The world's first deterministic archiver. Turn any folder
 into a REPRODUCIBLE text file and back. Yes, a text file--
 another world's first! It's clean, readable, and scrollable.*/
@@ -67,11 +71,11 @@ int main()
 				string full_path = path; full_path += "/"; full_path += line;
 				in_stream.open(full_path); if(in_stream.fail()) {cout << "\nERROR 2\n"; return 1;}
 				in_stream.get(file_byte); if(in_stream.eof()) {out_stream << "EMPTY FILE\n\n"; in_stream.close(); continue;}
-				int strip = 0;
+				long long strip = 0;
 				for(; !in_stream.eof(); in_stream.get(file_byte))
 				{	static const char symbols[] = "0123456789abcdef";
 					out_stream << symbols[(unsigned char)file_byte >> 4] << symbols[file_byte & 0xf];
-					strip++; if(strip == 5000) {out_stream << "\n"; strip = 0;} //5,000 2-digit hex per line, so 10,000 characters. Range: 1 to 49,999.
+					strip++; if(strip == max_strip_length) {out_stream << "\n"; strip = 0;}
 				}
 				if(strip == 0) {out_stream << "\n";} else {out_stream << "\n\n";}
 				in_stream.close();
@@ -107,10 +111,8 @@ int main()
 		if(file_byte != '\n') {for(; line[0] != '\0'; getline(in_stream, line)) {}}
 		for(;;)
 		{	//Creates empty file.
-			getline(in_stream, line);
-			if(line[0] == '\0') {in_stream.close(); return 0;}
-			string name = "unpacked/"; name += line;
-			out_stream.open(name); out_stream.close();
+			getline(in_stream, line); if(line[0] == '\0') {in_stream.close(); return 0;}
+			string name = "unpacked/"; name += line; out_stream.open(name); out_stream.close();
 			
 			//Adds file content.
 			getline(in_stream, line);
