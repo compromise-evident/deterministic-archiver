@@ -5,7 +5,7 @@ long long max_strip_length = 5000;
 /*Version 4.0.0
 The world's first deterministic archiver. Turn any folder
 into a REPRODUCIBLE text file and back. Yes, a text file--
-another world's first! It's clean, readable, and scrollable.*/
+another world's first! It's clean, readable, and editable.*/
 
 #include <algorithm>
 #include <filesystem>
