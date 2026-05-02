@@ -93,10 +93,10 @@ Authorship_8.0.1/Other/License
 # archive.txt is fully editable
 
 * You can delete or insert folders by editing the lines where folders are listed at the beginning.
-  This will create the "unpacked" folder with those modifications if you simply followed the structure.
+  This will create the "unpacked" folder with those modifications (if you did not disturb the structure.)
 
 * You can delete or insert data into the hex, anywhere. One byte is a 2-digit hex value like "a2" or "99".
-  This will create the "unpacked" folder with those modifications if you simply followed the structure.
+  This will create the "unpacked" folder with those modifications (if you did not disturb the structure.)
 
 * You can change ```max_strip_length``` in deterministic-archiver.cpp.
   This will change how many 2-digit hex there will be per line of file content in archive.txt.
