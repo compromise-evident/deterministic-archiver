@@ -16,7 +16,7 @@ using namespace std;
 int main()
 {	//Ensures reproducibility.
 	setlocale(LC_ALL, "C");
-	locale::global(std::locale("C"));
+	locale::global(locale("C"));
 	setenv("LC_ALL",   "C", 1);
 	setenv("LANG",     "C", 1);
 	setenv("LANGUAGE", "C", 1);
